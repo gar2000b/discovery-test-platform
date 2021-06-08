@@ -1,0 +1,6 @@
+Development Details
+-------------------
+
+Ping Redis Client from Desktop:
+./redis-cli.exe -h 192.168.0.30 ping
+

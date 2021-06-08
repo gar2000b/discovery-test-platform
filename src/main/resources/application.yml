@@ -1,0 +1,24 @@
+#--------------------------------------------------
+# Default Application Settings (geared for local)
+#--------------------------------------------------
+logging.level:
+  root: INFO
+  
+application:
+  name: discovery-test-platform
+  env-code: l
+  
+server:
+  contextPath: /
+  port: 8099
+  
+---
+#--------------------------------------------------
+# DEV PROFILE
+#--------------------------------------------------
+spring:
+  profiles: DEV
+
+application:
+  env-code: d
+  
