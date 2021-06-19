@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Test Harness</title>
+<meta charset="utf-8">
+<meta name="description" content="Test Harness">
+<meta name="author" content="Deposits">
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+<script type="text/javascript" src="javascript/xmlhttpobject.js"></script>
+<script type="text/javascript" src="javascript/test-harness.js"></script>
+<script type="text/javascript"
+	src="javascript/external/jquery/jquery.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$(("#tabs")).tabs();
+	});
+</script>
+<link rel="icon" type="image/png" href="images/icon.png" />
+</head>
+
+<body>
+	<div id="header" style="background-color: black;">
+		<div id="title" style="background-color: black;">
+			<img id="logo" src="images/platform_logo.png"
+				alt="Test Harness" />
+			<p style="font-size: 50px; padding-top: 75px;">
+				<strong>Discovery Test Platform</strong>
+			</p>
+		</div>
+		<div id="projects" align="center"
+			style="position: relative; top: -30px;">
+			<!-- <a href="#" onclick="testRedis();">Administer/Switch Project |
+				Deposits</a> -->
+			<a href="#" onclick="testCreate();">Test Create</a>
+			<!-- <a href="#" onclick="testRedis();">Test Load</a> -->
+			<a href="#" onclick="testRedis();">Test Load</a>
+			<a href="#" onclick="save();">Test Save</a>
+		</div>
+		<span id="help-icon"
+			style="position: relative; top: -52px; float: right;"> <a
+			href="#" onclick="logout();">logout</a>&nbsp;
+		</span>
+	</div>
+
+	<div id="toolbar" align="center">
+		<p>&nbsp;</p>
+		<p>
+			<a href="#" onclick="addNewIntegrationTest();" style="color: #f7eec5;">New Integration Test Suite</a>
+		</p>
+		<p>
+			<a href="#" onclick="addNewEndToEndTest();" style="color: #f7eec5;">New End-to-End Test Suite</a>
+		</p>
+		<p>
+			<a href="#" onclick="addNewPerformanceTest();" style="color: #f7eec5;">New Performance Test Suite</a>
+		</p>
+	</div>
+
+	<!-- <div class="widget" style="position:relative; left: 200px; top: 200px;">
+        <button>A button element</button>
+    </div> -->
+
+	<div id="tabs"
+		style="position: relative; left: 280px; top: 180px; width: 75%">
+		<ul id="tab-list">
+			<li><a href="#tabs-1" onclick="addNewView();">+</a></li>
+		</ul>
+	</div>
+
+	<form action="/perform_logout" id="logout" method="post">
+		<input type="hidden" name="_csrf" id="_csrf_logout" value="" />
+	</form>
+
+    <div id="itModal" class="modal">
+        <!-- Modal content -->
+        <div class="it-modal-content" align="center">
+            <div align="right" style="background-color: #295c85; height: 40px;">
+                <span class="close" onclick="closeServiceModel();">&times;&nbsp;</span>
+            </div>
+            <table id="itTestTable" class="color-grouping-1">
+                <tr class="top-level">
+                    <td><b>Name:</b></td>
+                    <td><input name="name-input" id="name-input" type="text"
+                        size="60" value="" /></td>
+                </tr>
+                <tr class="top-level">
+                    <td><b>Topology:</b></td>
+                    <td><input name="topology-input"
+                        id="topology-input" type="text" size="60" /></td>
+                </tr>
+                <tr class="top-level color-grouping-2" id="scheduled-row">
+                    <td colspan="2"><b>Will this test be scheduled?  - <input type="radio" name="scheduled" id="scheduledYes" value="yes" onchange="addScheduledRows();"> Yes <input type="radio" name="scheduled" id="scheduledNo" value="no" checked="checked" onchange="removeScheduledRows();"> No</b></td>
+                </tr>
+                <tr class="top-level color-grouping-3" id="not-running-row">
+                    <td colspan="2"><b>Is the app already running?  - <input type="radio" name="running" id="runningYes" value="yes" checked="checked" onchange="removeNotRunningRows();"> Yes <input type="radio" name="running" id="runningNo" value="no" onchange="addNotRunningRows();"> No</b></td>
+                </tr>
+                <tr class="top-level" id="add-test-row">
+                    <td colspan="2"><input type="button" value=" + " onclick="addTest();" /> <b>Add Test</b></td>
+                </tr>
+                <tr class="top-level color-grouping-1">
+                    <td></td>
+                    <td align="right"><input type="button" id="update" value="Update"
+                        onclick="closeServiceModel();" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

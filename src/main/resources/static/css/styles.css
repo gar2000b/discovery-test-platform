@@ -1,0 +1,13 @@
+body {
+    background-color: #031430;
+    color: white;
+    font-family: monospace;
+}
+
+table, th, td {
+   border: 1px solid white;
+   padding: 4px;
+}
+
+:link { color: white; }
+:visited { color: white; }

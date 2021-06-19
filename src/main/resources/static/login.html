@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<title>Test Harness</title>
+<meta charset="utf-8">
+<meta name="description" content="Test Harness">
+<meta name="author" content="Deposits">
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<!-- <script src="/webjars/jquery/jquery.min.js"></script> -->
+<script type="text/javascript" src="javascript/xmlhttpobject.js"></script>
+<script type="text/javascript" src="javascript/login.js"></script>
+<link rel="icon" type="image/png" href="images/abc_icon.png" />
+</head>
+
+<body>
+	<div align="center">
+	<form name='f' action='/login' method='POST'>
+		<table style="padding-top: 200px;">
+		    <tr><td>User:</td><td><input type='text' name='username' value=''></td></tr>
+		    <tr><td>Password:</td><td><input type='password' name='password'/></td></tr>
+		    <tr><td></td><td colspan='2' align="right"><input name="submit" type="submit" value="Login"/></td></tr>
+		    <input name="_csrf" id="_csrf" type="hidden" value="" />
+		</table>
+	</form>
+	</div>
+</body>
+
+</html>

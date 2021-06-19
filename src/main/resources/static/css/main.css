@@ -1,0 +1,689 @@
+/*---------------css for index.html---------------*/
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+body, html {
+	height: 100%;
+	font-family: Calibri, sans-serif;
+	background-image: url(../images/background.jpg
+	);
+	background-size: cover;
+    background-color: black;
+    color: white;
+    /* font-family: monospace; */
+}
+
+/*---------------link styling---------------*/
+a {
+	font-family: Calibri;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #f0f0f5;
+	margin: 0px;
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+	-o-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+}
+
+a:focus {
+	outline: none !important;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+/*---------------------------------------------*/
+
+h1 {
+	font-size: 2.5em;
+	margin: 0px;
+}
+
+h2, h3, h4, h5, h6 {
+	margin: 0px;
+}
+
+p {
+	font-family: Calibri;
+	font-size: 14px;
+	line-height: 1.7;
+	color: white;
+	margin: 0px;
+}
+
+ul, li {
+	margin: 0px;
+	list-style-type: none;
+}
+
+/*---------------form styling---------------*/
+input {
+/* 	outline: none;
+	border: none; */
+}
+
+/* input[type="number"] {
+	-moz-appearance: textfield;
+	appearance: none;
+	-webkit-appearance: none;
+} */
+
+/* input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button
+	{
+	-webkit-appearance: none;
+} */
+
+textarea {
+	outline: none;
+	border: none;
+}
+
+textarea:focus, input:focus {
+	border-color: transparent !important;
+}
+
+input:focus::-webkit-input-placeholder {
+	color: transparent;
+}
+
+input:focus:-moz-placeholder {
+	color: transparent;
+}
+
+input:focus::-moz-placeholder {
+	color: transparent;
+}
+
+input:focus:-ms-input-placeholder {
+	color: transparent;
+}
+
+textarea:focus::-webkit-input-placeholder {
+	color: transparent;
+}
+
+textarea:focus:-moz-placeholder {
+	color: transparent;
+}
+
+textarea:focus::-moz-placeholder {
+	color: transparent;
+}
+
+textarea:focus:-ms-input-placeholder {
+	color: transparent;
+}
+
+input::-webkit-input-placeholder {
+	color: #999999;
+}
+
+input:-moz-placeholder {
+	color: #999999;
+}
+
+input::-moz-placeholder {
+	color: #999999;
+}
+
+input:-ms-input-placeholder {
+	color: #999999;
+}
+
+textarea::-webkit-input-placeholder {
+	color: #999999;
+}
+
+textarea:-moz-placeholder {
+	color: #999999;
+}
+
+textarea::-moz-placeholder {
+	color: #999999;
+}
+
+textarea:-ms-input-placeholder {
+	color: #999999;
+}
+
+/*---------------------------------------------*/
+button {
+	outline: none !important;
+	border: none;
+	background: transparent;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+iframe {
+	border: none !important;
+}
+
+/*---------------------------------------------*/
+.container-contact100 {
+	width: 100%;
+	min-height: 100vh;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	padding: 15px;
+	background: transparent;
+	position: relative;
+	z-index: 1;
+}
+
+.wrap-contact100 {
+	width: 670px;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+	position: relative;
+}
+
+.wrap-contact100-addons {
+    width: 1000px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.wrap-contact100-bundles {
+    width: 1200px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+/*---------------------------------------------*/
+.contact100-form-title {
+	width: 100%;
+	z-index: 1;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: left;
+	padding: 40px 15px 40px 15px;
+}
+
+.contact100-form-title-1 {
+	font-family: Calibri;
+	font-weight: strong;
+	font-size: 30px;
+	color: #fff;
+	line-height: 1.2;
+	text-align: center;
+	padding-bottom: 7px;
+}
+
+.contact100-form-title-2 {
+	font-family: Calibri;
+	font-size: 15px;
+	color: #fff;
+	line-height: 1.5;
+	text-align: center;
+}
+
+.contact100-form-title::before {
+	content: "";
+	display: block;
+	position: absolute;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: rgba(54, 84, 99, 0.7);
+}
+
+/*---------------------------------------------*/
+.contact100-form {
+	width: 100%;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	padding: 2em 4em 2em 5em;
+}
+
+/*---------------------------------------------*/
+.wrap-input100 {
+	width: 100%;
+	position: relative;
+	border-bottom: 1px solid #b2b2b2;
+	margin-bottom: 26px;
+}
+
+.label-input100 {
+	font-family: Calibri;
+	font-size: 15px;
+	color: #808080;
+	line-height: 1.2;
+	text-align: right;
+	position: absolute;
+	top: 14px;
+	left: -105px;
+	width: 80px;
+}
+
+/*---------------------------------------------*/
+.input100 {
+	font-family: Calibri;
+	font-size: 15px;
+	color: #555555;
+	line-height: 1.2;
+	display: block;
+	width: 100%;
+	background: transparent;
+	padding: 0 5px;
+}
+
+.focus-input100 {
+	position: absolute;
+	display: block;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+}
+
+.focus-input100::before {
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	width: 0;
+	height: 1px;
+	-webkit-transition: all 0.6s;
+	-o-transition: all 0.6s;
+	-moz-transition: all 0.6s;
+	transition: all 0.6s;
+	background: #57b846;
+}
+
+/*---------------------------------------------*/
+input.input100 {
+	height: 45px;
+}
+
+textarea.input100 {
+	min-height: 115px;
+	padding-top: 14px;
+	padding-bottom: 13px;
+}
+
+.input100:focus+.focus-input100::before {
+	width: 100%;
+}
+
+.has-val.input100+.focus-input100::before {
+	width: 100%;
+}
+
+/*---------------------------------------------*/
+.container-contact100-form-btn {
+	width: 100%;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	flex-wrap: wrap;
+	padding-top: 28px;
+}
+
+.contact100-form-btn {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0 20px;
+	min-width: 120px;
+	height: 35px;
+	background-color: #006AC3;
+	border-radius: 25px;
+	font-family: Calibri;
+	font-size: 16px;
+	color: #fff;
+	line-height: 1.2;
+	-webkit-transition: all 0.4s;
+	-o-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+	transition: all 0.4s;
+	margin: 0 auto;
+}
+
+.contact100-form-btn:hover {
+	background-color: #333333;
+}
+
+.contact100-form-btn:hover i {
+	-webkit-transform: translateX(10px);
+	-moz-transform: translateX(10px);
+	-ms-transform: translateX(10px);
+	-o-transform: translateX(10px);
+	transform: translateX(10px);
+}
+
+/*---------------Responsiveness---------------*/
+@media ( max-width : 576px) {
+	.contact100-form {
+		padding: 43px 15px 57px 117px;
+	}
+}
+
+@media ( max-width : 480px) {
+	.contact100-form {
+		padding: 43px 15px 57px 15px;
+	}
+	.label-input100 {
+		text-align: left;
+		position: unset;
+		top: unset;
+		left: unset;
+		width: 100%;
+		padding: 0 5px;
+	}
+}
+
+/*---------------Validation Alert---------------*/
+.validate-input {
+	position: relative;
+}
+
+.alert-validate::before {
+	content: attr(data-validate);
+	position: absolute;
+	max-width: 70%;
+	background-color: #fff;
+	border: 1px solid #c80000;
+	border-radius: 2px;
+	padding: 4px 25px 4px 10px;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	transform: translateY(-50%);
+	right: 2px;
+	pointer-events: none;
+	font-family: Calibri;
+	color: #c80000;
+	font-size: 13px;
+	line-height: 1.4;
+	text-align: left;
+	visibility: hidden;
+	opacity: 0;
+	-webkit-transition: opacity 0.4s;
+	-o-transition: opacity 0.4s;
+	-moz-transition: opacity 0.4s;
+	transition: opacity 0.4s;
+}
+
+.alert-validate::after {
+	content: "\f06a";
+	font-family: Calibri;
+	display: block;
+	position: absolute;
+	color: #c80000;
+	font-size: 15px;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	transform: translateY(-50%);
+	right: 8px;
+}
+
+.alert-validate:hover:before {
+	visibility: visible;
+	opacity: 1;
+}
+
+@media ( max-width : 992px) {
+	.alert-validate::before {
+		visibility: visible;
+		opacity: 1;
+	}
+}
+
+/*---------------sliders---------------*/
+/* The switch - the box around the slider */
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+	display: none;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 8px;
+	left: 8px;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+	height: 20px;
+	width: 35px;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 2px;
+	bottom: 2px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+input:checked+.slider {
+	background-color: #006AC3;
+}
+
+input:focus+.slider {
+	box-shadow: 0 0 1px #006AC3;
+}
+
+input:checked+.slider:before {
+	-webkit-transform: translateX(16px);
+	-ms-transform: translateX(16px);
+	transform: translateX(16px);
+}
+
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+/*---------------table---------------*/
+table, td, th {
+	padding: 4px;
+    border: none;
+    color: black;
+	font-size: 16px;
+}
+
+#addonTable td {
+	padding: 2px;
+}
+
+.description {
+	width: 70%;
+	text-align: left;
+}
+
+.price {
+	width: 15%;
+	text-align: right;
+}
+
+.quantity {
+	width: 15%;
+	text-align: center;
+}
+
+#packages {
+	width: 200px;
+	height: 30px;
+	border-radius: 11px;
+}
+
+#logo {
+/* 	position: absolute;
+	left: 2%;
+	top: 15%;
+	width: 15%; */
+	float: left;
+}
+
+#table-title {
+	padding-top: 5%;
+}
+
+#saving {
+    background-color: #ffffff;
+    border: 1px solid black;
+    padding: 4px;
+    position: absolute;
+    bottom: 0;
+    left:0;
+    color: #003366;
+}
+
+:link { color: white; }
+:visited { color: white; }
+
+#header {
+    width: 100vw;
+    height: 17vh;
+    background-color: #152026;
+    position: fixed;
+    z-index:100000000;
+    margin: 0px;
+}
+
+#toolbar {
+    width: 260px;
+    top: 160px;
+    height: 100%;
+    position: fixed;
+    background-color: black;
+    margin: 0px;
+    z-index:99999000;
+    display: block;
+    /* overflow-y:auto; */
+}
+
+#tabs p {
+    font-family: Calibri;
+    font-size: 14px;
+    line-height: 1.7;
+    color: black;
+    margin: 0px;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 99999002; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    /* padding: 20px; */
+    border: 1px solid #888;
+    width: 400px; /* Could be more or less, depending on screen size */
+}
+
+.it-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    /* padding: 20px; */
+    border: 1px solid #888;
+    width: 700px; /* Could be more or less, depending on screen size */
+}
+
+#itTestTable {
+	border-spacing: 0px;
+}
+#itTestTable table {
+	border-spacing: 0px;
+}
+.test-injection-row {
+    background-color: #d8e7f3;
+}
+.test-assertion-row {
+    background-color: #c4dced;
+}
+
+.color-grouping-1 {
+	background-color: #ebf3f9;
+}
+.color-grouping-2 {
+	background-color: #d8e7f3;
+}
+.color-grouping-3 {
+	background-color: #c4dced;
+}
+.color-grouping-4 {
+	background-color: #b0d0e8;
+}
+.color-grouping-5 {
+	background-color: #9dc4e2;
+}
+.color-grouping-6 {
+	background-color: #89b8dc;
+}

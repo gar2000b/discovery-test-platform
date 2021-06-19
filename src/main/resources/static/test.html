@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <script type="text/javascript">
+        function test() {
+        	document.getElementById('in').value = document.getElementById('in').value;
+        	alert(document.getElementById('in').value);
+        	alert(document.getElementsByTagName('BODY')[0].innerHTML);
+        }
+        </script>
+    </head>
+    <body>
+        <p>This is a test</p>
+        <input type="text" id="in"><br><br>
+        <input type="button" value="Test" onclick="test();">
+    </body>
+</html>
