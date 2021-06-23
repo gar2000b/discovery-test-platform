@@ -98,15 +98,15 @@ function addNewView() {
 	   <tr align="center" id='test-` + tabsCounter + `-1'>
 		   <td><img alt="status" src="images/pass.png"></td>
 		   <td>IT</td>
-		   <td><a id='test-name-` + tabsCounter + `-1' href='#' onclick='openModal("modal-test-` + tabsCounter + `-1");'>New Integration Test</a></td>
-		   <td><a href='https://system-monitor-dev.apps.pcf.devfg.abc.com/index.html?workspace=pda-flow' target='_blank'>pda-flow</a></td>
+		   <td><a id='test-name-test-` + tabsCounter + `-1' href='#' onclick='openModal("modal-test-` + tabsCounter + `-1");'>New Integration Test</a></td>
+		   <td><a id='topology-test-` + tabsCounter + `-1' href='https://www.google.co.uk' target='_blank'>topology-link</a></td>
 		   <td>01-01-2019 @ 00:00:00</td>
 		   <td>01-01-2019 @ 00:00:00</td>
 		   <td>0 ms</td>
-		   <td>0 0 6 * * *</td>
+		   <td id='cron-test-` + tabsCounter + `-1'>N/A</td>
 		   <td><img alt="status" src="images/console.png" onclick="alert('Yet to be implemented');"></td>
 		   <td><input type='button' value='Delete' onclick='deleteTest("test-` + tabsCounter + `-1");' /></td>
-		   <td><input type="button" value="Execute" /></td>
+		   <td><input type="button" value="Execute" onclick='executeTest("test-` + tabsCounter + `-1");' /></td>
 	   </tr>
 	</table>`
 							+ "</p><br/><p><input type='button' value='Rename this View?' onclick='renameView("
@@ -397,14 +397,15 @@ function addNewIntegrationTest() {
 		cell0.innerHTML = "<img alt='status' src='images/pass.png'>";
 		cell1.innerHTML = "IT";
 		cell2.innerHTML = "<a id='test-name-" + row.id + "' href='#' onclick='openModal(\"modal-" + row.id + "\");'>New Integration Test</a>";
-		cell3.innerHTML = "<a href='https://system-monitor-dev.apps.pcf.devfg.abc.com/index.html?workspace=pda-flow' target='_blank'>topology-link</a>";
+		cell3.innerHTML = "<a id='topology-" + row.id + "' href='https://www.google.co.uk' target='_blank'>topology-link</a>";
 		cell4.innerHTML = "01-01-2019 @ 00:00:00";
 		cell5.innerHTML = "01-01-2019 @ 00:00:00";
-		cell6.innerHTML = "0 ms";		
+		cell6.innerHTML = "0 ms";
+		cell7.id = "cron-" + row.id;
 		cell7.innerHTML = "N/A";
 		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"alert('Yet to be implemented');\">";
 		cell9.innerHTML = "<input type='button' value='Delete' onclick='deleteTest(\"" + row.id + "\");' />";
-		cell10.innerHTML = "<input type='button' value='Execute' />";
+		cell10.innerHTML = "<input type='button' value='Execute' onclick='executeTest(\"" + row.id + "\");' />";
 		
 		injectTestEntry("modal-" + row.id, "tabs-" + tabId);
 		save();
@@ -436,7 +437,7 @@ function addNewEndToEndTest() {
 		cell0.innerHTML = "<img alt='status' src='images/pass.png'>";
 		cell1.innerHTML = "ETE";
 		cell2.innerHTML = "<a href='#' onclick='openModal(\"itModal\");'>New End-to-End Test</a>";
-		cell3.innerHTML = "<a href='https://system-monitor-dev.apps.pcf.devfg.abc.com/index.html?workspace=pda-flow' target='_blank'>topology-link</a>";
+		cell3.innerHTML = "<a href='https://www.google.co.uk' target='_blank'>topology-link</a>";
 		cell4.innerHTML = "01-01-2019 @ 00:00:00";
 		cell5.innerHTML = "01-01-2019 @ 00:00:00";
 		cell6.innerHTML = "0 ms";		
@@ -474,7 +475,7 @@ function addNewPerformanceTest() {
 		cell0.innerHTML = "<img alt='status' src='images/pass.png'>";
 		cell1.innerHTML = "PERF";
 		cell2.innerHTML = "<a href='#' onclick='openModal(\"itModal\");'>New Performance Test</a>";
-		cell3.innerHTML = "<a href='https://system-monitor-dev.apps.pcf.devfg.abc.com/index.html?workspace=pda-flow' target='_blank'>topology-link</a>";
+		cell3.innerHTML = "<a href='https://www.google.co.uk' target='_blank'>topology-link</a>";
 		cell4.innerHTML = "01-01-2019 @ 00:00:00";
 		cell5.innerHTML = "01-01-2019 @ 00:00:00";
 		cell6.innerHTML = "0 ms";		
@@ -536,7 +537,7 @@ function openModal(entry) {
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
 				var testTable = row.children[0].children[1];
-				alert("i: " + i);
+//				alert("i: " + i);
 				var test = testSuite["tests"][i];
 				var injectionRows = testTable.getElementsByClassName("test-injection-row");
 				var assertionRows = testTable.getElementsByClassName("test-assertion-row");
@@ -567,8 +568,24 @@ function openInjectionRows(injectionRows, test) {
 function openInjectionHttp(injectionRows, test) {
 	injectionRows[0].getElementsByTagName('select')[0].value = "http";
 	updateTestInjectionType(injectionRows[0].getElementsByTagName('select')[0]);
-	alert(test["endpoint"]);
+//	alert(test["endpoint"]);
 	injectionRows[2].getElementsByTagName('input')[0].value = test["endpoint"];
+	injectionRows[4].getElementsByTagName('select')[0].value = test["verb"];
+	injectionRows[8].getElementsByTagName('textarea')[0].value = test["body"];
+	
+	for(var i = 0; i < test["headers"].length; i++) {
+		if (i > 0) {
+			addHttpHeader(document.getElementById('http-header-button'), test["headers"][i]["key"], test["headers"][i]["value"]);
+		} else {
+			updateFirstHeader(document.getElementById('http-header-button'), test["headers"][i]["key"], test["headers"][i]["value"]);
+		}
+//		alert(test["headers"][i]["key"]);
+//		alert(test["headers"][i]["value"]);
+	}
+	
+//	addHttpHeader(document.getElementById('http-header-button'));
+//	addHttpHeader(document.getElementById('http-header-button'));
+//	addHttpHeader(document.getElementById('http-header-button'));
 	
 	// var testInjection = {};
 	// testInjection["type"] = "injection";
@@ -609,8 +626,17 @@ function openInjectionRdbms(injectionRows, test) {
 }
 
 function openAssertionRows(assertionRows, test) {
-	var assertionType = assertionRows[0].children[1].children[0].value;
+	
+//	var injectionType = test["injection-type"];
+//	if (injectionType == 'http') {
+//		openInjectionHttp(injectionRows, test);
+//	}
+	
+	test = test["test-pair"][1];
+//	alert('here1');
+	var assertionType = test["assertion-type"];
 	if (assertionType == 'http') {
+//		alert('here2');
 		openAssertionHttp(assertionRows, test);
 	}
 	if (assertionType == 'http-downstream') {
@@ -628,15 +654,24 @@ function openAssertionRows(assertionRows, test) {
 }
 
 function openAssertionHttp(assertionRows, test) {
-	var testAssertion = {};
-	testAssertion["type"] = "assertion";
-	testAssertion["assertion-type"] = assertionRows[0].getElementsByTagName('select')[0].value;
-	testAssertion["http-status"] = assertionRows[2].getElementsByTagName('select')[0].value;
-	testAssertion["response-type"] = assertionRows[4].getElementsByTagName('select')[0].value;
-	testAssertion["expected-payload"] = assertionRows[6].getElementsByTagName('textarea')[0].value;
-
-	// alert(testAssertion["expected-payload"]);
-	test["test-pair"].push(testAssertion);
+	
+	assertionRows[0].getElementsByTagName('select')[0].value = "http";
+	updateTestAssertionType(assertionRows[0].getElementsByTagName('select')[0]);
+//	alert(test["endpoint"]);
+	assertionRows[2].getElementsByTagName('select')[0].value = test["http-status"];
+	assertionRows[4].getElementsByTagName('select')[0].value = test["response-type"];
+	assertionRows[6].getElementsByTagName('textarea')[0].value = test["expected-payload"];
+	
+//	alert('here3')
+//	var testAssertion = {};
+//	testAssertion["type"] = "assertion";
+//	testAssertion["assertion-type"] = assertionRows[0].getElementsByTagName('select')[0].value;
+//	testAssertion["http-status"] = assertionRows[2].getElementsByTagName('select')[0].value;
+//	testAssertion["response-type"] = assertionRows[4].getElementsByTagName('select')[0].value;
+//	testAssertion["expected-payload"] = assertionRows[6].getElementsByTagName('textarea')[0].value;
+//
+//	alert(testAssertion["expected-payload"]);
+//	test["test-pair"].push(testAssertion);
 }
 
 function openAssertionHttpDownstream(assertionRows, test) {
@@ -703,9 +738,18 @@ function updateTestEntry(entry) {
 //	alert("entry is: " + entry);
 //	alert(document.getElementById(entry).value);
 	
-	testId = entry.replace('modal-test', 'test-name');
+	testId = entry.replace('modal-test', 'test-name-test');
 //	alert(testId);
+//	alert(document.getElementById('name-input').value);
 	document.getElementById(testId).innerHTML = document.getElementById('name-input').value;
+	
+	topologyId = entry.replace('modal-test', 'topology-test');
+	document.getElementById(topologyId).href = document.getElementById('topology-input').value;
+	
+	if(document.getElementById('cron-schedule') != null) {
+		cronId = entry.replace('modal-test', 'cron-test');
+		document.getElementById(cronId).innerHTML = document.getElementById('cron-schedule').value;	
+	}
 	
 	save();
 	resetServiceModal();
@@ -830,6 +874,7 @@ function processAssertionRdbms(assertionRows, test) {
 }
 
 function closeServiceModel() {
+	resetServiceModal();
 	var modal = document.getElementById('itModal');
 	modal.style.display = "none";
 }
@@ -1135,7 +1180,7 @@ function populateHttpInjectionEntry(select) {
 				<td><input type='button' value=' - ' onclick='removeHttpHeader(this);' /></td>
 			</tr>
 			<tr>
-				<td colspan='3'><input type='button' value=' + ' onclick='addHttpHeader(this);' /> <b>Add Header</b></td>
+				<td colspan='3'><input id='http-header-button' type='button' value=' + ' onclick='addHttpHeader(this);' /> <b>Add Header</b></td>
 			</tr>
 		</table>`;
 	
@@ -1579,6 +1624,31 @@ function addHttpHeader(button) {
 	}
 }
 
+function addHttpHeader(button, key, value) {
+	var table = button.parentNode.parentNode.parentNode;
+	var rows = table.getElementsByTagName("tr");
+	for (var i = 0; i < rows.length; i++) {
+		if (rows[i].id == "header-entry-row") {
+			var row = table.insertRow(rows.length - 1);
+			var cell0 = row.insertCell(0);
+			cell0.innerHTML = "<input type='text' value='" + key + "' />";
+			var cell1 = row.insertCell(1);
+			cell1.innerHTML = "<input type='text' value='" + value + "' />";
+			var cell2 = row.insertCell(2);
+			cell2.innerHTML = "<input type='button' value=' - ' onclick='removeHttpHeader(this);' />";
+			break;
+		}
+	}
+}
+
+function updateFirstHeader(button, key, value) {
+	var table = button.parentNode.parentNode.parentNode;
+	var rows = table.getElementsByTagName("tr");
+	var cells = rows[1].getElementsByTagName("td");
+	cells[0].getElementsByTagName("input")[0].value = key;
+	cells[1].getElementsByTagName("input")[0].value = value;
+}
+
 function addRdbmsColumn(button) {
 	var table = button.parentNode.parentNode.parentNode;
 	var rows = table.getElementsByTagName("tr");
@@ -1765,4 +1835,8 @@ function deleteArray(array) {
 	while (array.length != 0) {
 		array[0].remove();
 	}
+}
+
+function executeTest(testId) {
+	alert(testId);
 }
