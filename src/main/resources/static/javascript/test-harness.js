@@ -5,6 +5,7 @@ var token = "";
 var zIndex = 10;
 var currentProjectId = 0;
 var tabId = 0;
+var workspaceName = "primary-workspace";
 
 window.onload = function() {
 	// TODO: add back to re-enable security
@@ -15,7 +16,7 @@ window.onload = function() {
 
 function openPrimaryWorkspace() {
 	emptyTestSuite();
-	openWorkspaceByName("primary-workspace");
+	openWorkspaceByName(workspaceName);
 }
 
 function getToken() {
@@ -106,7 +107,7 @@ function addNewView() {
 		   <td id='cron-test-` + tabsCounter + `-1'>N/A</td>
 		   <td><img alt="status" src="images/console.png" onclick="alert('Yet to be implemented');"></td>
 		   <td><input type='button' value='Delete' onclick='deleteTest("test-` + tabsCounter + `-1");' /></td>
-		   <td><input type="button" value="Execute" onclick='executeTest("test-` + tabsCounter + `-1");' /></td>
+		   <td><input type="button" value="Execute" onclick='executeTest("test-` + tabsCounter + `-1", this);' /></td>
 	   </tr>
 	</table>`
 							+ "</p><br/><p><input type='button' value='Rename this View?' onclick='renameView("
@@ -405,7 +406,7 @@ function addNewIntegrationTest() {
 		cell7.innerHTML = "N/A";
 		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"alert('Yet to be implemented');\">";
 		cell9.innerHTML = "<input type='button' value='Delete' onclick='deleteTest(\"" + row.id + "\");' />";
-		cell10.innerHTML = "<input type='button' value='Execute' onclick='executeTest(\"" + row.id + "\");' />";
+		cell10.innerHTML = "<input type='button' value='Execute' onclick='executeTest(\"" + row.id + "\", this);' />";
 		
 		injectTestEntry("modal-" + row.id, "tabs-" + tabId);
 		save();
@@ -1837,6 +1838,33 @@ function deleteArray(array) {
 	}
 }
 
-function executeTest(testId) {
-	alert(testId);
+function executeTest(testId, button) {
+	var statusIcon = button.parentNode.parentNode.cells[0].getElementsByTagName('img')[0];
+	statusIcon.src = "images/running.gif";
+//	alert(statusIcon.src);
+	var thisdate = new Date();
+	var serverPage = "projects/name/" + workspaceName + "/execute-test/" + testId;
+
+	var xmlhttp1 = getxmlhttp();
+	xmlhttp1.open("POST", serverPage);
+	xmlhttp1.onreadystatechange = function() {
+		executeTestAjaxHandler(xmlhttp1, true, workspaceName, statusIcon);
+	}
+	xmlhttp1.setRequestHeader("_csrf", token);
+	xmlhttp1.send(null);
+}
+
+function executeTestAjaxHandler(xmlhttp1, workspaceFlag, workspaceName, statusIcon) {
+	try {
+		if (xmlhttp1.readyState == 4 && xmlhttp1.status == 200) {
+			var response = xmlhttp1.responseText;
+			statusIcon.src = "images/pass.png";
+//			alert(response);
+		} else if (xmlhttp1.status != 200) {
+			alert("HTTP Status: " + xmlhttp1.status);
+		}
+	}
+	catch(error) {
+		return;
+	}
 }

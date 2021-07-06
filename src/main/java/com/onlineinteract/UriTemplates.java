@@ -13,4 +13,6 @@ public class UriTemplates {
 	public static final String PROJECT_ID = "/projects/{projectId}";
 
 	public static final String PROJECT_NAME = "/projects/name/{projectName}";
+	
+	public static final String TEST_EXECUTION = "/projects/name/{projectName}/execute-test/{testId}";
 }
