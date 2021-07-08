@@ -105,7 +105,7 @@ function addNewView() {
 		   <td>01-01-2019 @ 00:00:00</td>
 		   <td>0 ms</td>
 		   <td id='cron-test-` + tabsCounter + `-1'>N/A</td>
-		   <td><img alt="status" src="images/console.png" onclick="alert('Yet to be implemented');"></td>
+		   <td><img alt="status" src="images/console.png" onclick="openConsoleModal();"></td>
 		   <td><input type='button' value='Delete' onclick='deleteTest("test-` + tabsCounter + `-1");' /></td>
 		   <td><input type="button" value="Execute" onclick='executeTest("test-` + tabsCounter + `-1", this);' /></td>
 	   </tr>
@@ -404,7 +404,7 @@ function addNewIntegrationTest() {
 		cell6.innerHTML = "0 ms";
 		cell7.id = "cron-" + row.id;
 		cell7.innerHTML = "N/A";
-		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"alert('Yet to be implemented');\">";
+		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"openConsoleModal();\">";
 		cell9.innerHTML = "<input type='button' value='Delete' onclick='deleteTest(\"" + row.id + "\");' />";
 		cell10.innerHTML = "<input type='button' value='Execute' onclick='executeTest(\"" + row.id + "\", this);' />";
 		
@@ -443,7 +443,7 @@ function addNewEndToEndTest() {
 		cell5.innerHTML = "01-01-2019 @ 00:00:00";
 		cell6.innerHTML = "0 ms";		
 		cell7.innerHTML = "N/A";
-		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"alert('Yet to be implemented');\">";
+		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"openConsoleModal();\">";
 		cell9.innerHTML = "<input type='button' value='Delete' onclick='deleteTest(\"" + row.id + "\");' />";
 		cell10.innerHTML = "<input type='button' value='Execute' />";
 		
@@ -481,7 +481,7 @@ function addNewPerformanceTest() {
 		cell5.innerHTML = "01-01-2019 @ 00:00:00";
 		cell6.innerHTML = "0 ms";		
 		cell7.innerHTML = "N/A";
-		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"alert('Yet to be implemented');\">";
+		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"openConsoleModal();\">";
 		cell9.innerHTML = "<input type='button' value='Delete' onclick='deleteTest(\"" + row.id + "\");' />";
 		cell10.innerHTML = "<input type='button' value='Execute' />";
 		
@@ -493,6 +493,11 @@ function deleteTest(rowId) {
 	document.getElementById(rowId).remove();
 	document.getElementById("modal-" + rowId).remove();
 	save();
+}
+
+function openConsoleModal() {
+	var modal = document.getElementById('consoleModal');
+	modal.style.display = "block";
 }
 
 function openModal(entry) {
@@ -877,6 +882,11 @@ function processAssertionRdbms(assertionRows, test) {
 function closeServiceModel() {
 	resetServiceModal();
 	var modal = document.getElementById('itModal');
+	modal.style.display = "none";
+}
+
+function closeConsoleModel() {
+	var modal = document.getElementById('consoleModal');
 	modal.style.display = "none";
 }
 
@@ -1852,6 +1862,7 @@ function executeTest(testId, button) {
 	}
 	xmlhttp1.setRequestHeader("_csrf", token);
 	xmlhttp1.send(null);
+	document.getElementById('console-input').value = "*** Test Initiated ***";
 }
 
 function executeTestAjaxHandler(xmlhttp1, workspaceFlag, workspaceName, statusIcon) {
@@ -1859,9 +1870,15 @@ function executeTestAjaxHandler(xmlhttp1, workspaceFlag, workspaceName, statusIc
 		if (xmlhttp1.readyState == 4 && xmlhttp1.status == 200) {
 			var response = xmlhttp1.responseText;
 			statusIcon.src = "images/pass.png";
+			document.getElementById('console-input').value = response;
+			save();
 //			alert(response);
 		} else if (xmlhttp1.status != 200) {
-			alert("HTTP Status: " + xmlhttp1.status);
+			var response = xmlhttp1.responseText;
+			statusIcon.src = "images/fail.png";
+			document.getElementById('console-input').value = response;
+			save();
+//			alert("HTTP Status: " + xmlhttp1.status);
 		}
 	}
 	catch(error) {
