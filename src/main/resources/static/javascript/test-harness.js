@@ -14,6 +14,26 @@ window.onload = function() {
 	openPrimaryWorkspace();
 }
 
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    var isEscape = false;
+    if ("key" in evt) {
+        isEscape = (evt.key === "Escape" || evt.key === "Esc");
+    } else {
+        isEscape = (evt.keyCode === 27);
+    }
+    if (isEscape) {
+    	var modal = document.getElementById('itModal');
+    	if (modal.style.display == "block") {
+    		closeServiceModel();
+    	}
+    	var modal = document.getElementById('consoleModal');
+    	if (modal.style.display == "block") {
+    		closeConsoleModel();
+    	}
+    }
+};
+
 function openPrimaryWorkspace() {
 	emptyTestSuite();
 	openWorkspaceByName(workspaceName);
@@ -579,11 +599,13 @@ function openInjectionHttp(injectionRows, test) {
 	injectionRows[4].getElementsByTagName('select')[0].value = test["verb"];
 	injectionRows[8].getElementsByTagName('textarea')[0].value = test["body"];
 	
+//	alert(JSON.stringify(test["headers"]));
+//	alert(injectionRows[6].children[0].children[0].getElementsByTagName('input')[0]);
 	for(var i = 0; i < test["headers"].length; i++) {
 		if (i > 0) {
-			addHttpHeader(document.getElementById('http-header-button'), test["headers"][i]["key"], test["headers"][i]["value"]);
+			addHttpHeader(injectionRows[6].children[0].children[0].getElementsByTagName('input')[0], test["headers"][i]["key"], test["headers"][i]["value"]);
 		} else {
-			updateFirstHeader(document.getElementById('http-header-button'), test["headers"][i]["key"], test["headers"][i]["value"]);
+			updateFirstHeader(injectionRows[6].children[0].children[0].getElementsByTagName('input')[0], test["headers"][i]["key"], test["headers"][i]["value"]);
 		}
 //		alert(test["headers"][i]["key"]);
 //		alert(test["headers"][i]["value"]);
@@ -801,8 +823,9 @@ function processInjectionHttp(injectionRows, test) {
 	testInjection["verb"] = injectionRows[4].getElementsByTagName('select')[0].value;
 	testInjection["body"] = injectionRows[8].getElementsByTagName('textarea')[0].value;
 
-	if (document.getElementById('header-table') != null) {
-		var table = document.getElementById('header-table');
+//	alert(injectionRows[6].children[0].children[0]);
+	if (injectionRows[6].children[0].children[0] != null) {
+		var table = injectionRows[6].children[0].children[0];
 		var rows = table.children[0].children;
 		testInjection["headers"] = [];
 		for (var i = 1; i < rows.length - 1; i++) {
@@ -1045,10 +1068,11 @@ function removeConfigEntry(button) {
 
 function addTest() {
 	var table = document.getElementById('itTestTable');
-	var rows = table.getElementsByClassName("top-level");
-	for (var i = 0; i < rows.length; i++) {
-		if (rows[i].id == "add-test-row") {
-			var row = table.insertRow(i);
+	var rowLength = table.rows.length;
+//	var rows = table.getElementsByClassName("top-level");
+//	for (var i = 0; i < rows.length; i++) {
+//		if (rows[i].id == "add-test-row") {
+			var row = table.insertRow(rowLength - 2);
 			row.className = "test-level";
 			var cell0 = row.insertCell(0);
 			cell0.colSpan = "2";
@@ -1068,6 +1092,7 @@ function addTest() {
 								<option value='kafka'>KAFKA</option>
 								<option value='ftp'>FTP</option>
 								<option value='rdbms'>RDBMS</option>
+								<option value='assertion'>ASSERTION ONLY</option>
 							</select>
 						</td>
 					</tr> 
@@ -1087,9 +1112,9 @@ function addTest() {
 						</td>
 					</tr>
 				</table>`;
-			break;
-		}
-	}
+//			break;
+//		}
+//	}
 }
 
 function updateTestInjectionType(select) {
@@ -1105,7 +1130,7 @@ function updateTestInjectionType(select) {
 	if (select.value == 'rdbms') {
 		populateRdbmsInjectionEntry(select);
 	}
-	if (select.value == '') {
+	if (select.value == '' || select.value == 'assertion') {
 		resetTestInjection(select);
 	}
 }

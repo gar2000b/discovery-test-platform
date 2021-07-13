@@ -327,6 +327,7 @@ public class TestHarnessController {
 
 	private void spinUpApplicationService(String gitRepo, String appPortNo,
 			ArrayList<LinkedHashMap<String, String>> configOverrides) {
+		applicationRunningFlag = false;
 		logger.info("Spinning up application from: " + gitRepo + " on port no: " + appPortNo);
 		summary += "Spinning up application from: " + gitRepo + " on port no: " + appPortNo + "\n";
 		String appConfigOverrides = "";
@@ -469,6 +470,7 @@ public class TestHarnessController {
 					if (response.getStatusCodeValue() == Integer.valueOf(httpStatus)
 							&& response.getBody().equals(expectedPayload)) {
 						logger.info("\n*** Test PASS ***\n");
+						summary = "*** Test PASS ***\n\n" + summary;
 						summary += "\n*** Test PASS ***\n";
 						return true;
 					}
@@ -477,6 +479,7 @@ public class TestHarnessController {
 		}
 
 		logger.info("\n*** Test FAIL ***\n");
+		summary = "*** Test FAIL ***\n\n" + summary;
 		summary += "\n*** Test FAIL ***\n";
 		return false;
 	}
