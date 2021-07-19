@@ -3,7 +3,7 @@ package com.onlineinteract;
 /**
  * URITemplates defines the URI resources for REST access.
  * 
- * @author 330885096
+ * @author Gary Black
  *
  */
 public class UriTemplates {

@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.security.web.csrf.CsrfToken;
+// import org.springframework.security.web.csrf.CsrfToken; TODO: uncomment to re-enable security
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,7 +58,7 @@ public class TestHarnessController {
 	private OutputStream outputStream;
 	private String summary = "";
 
-	// TODO: undo comment when security needs re-enabled.
+	// TODO: uncomment to re-enable security
 	// @RequestMapping(method = RequestMethod.GET, produces = "application/json",
 	// value = "/token")
 	// @ResponseBody
@@ -178,6 +178,7 @@ public class TestHarnessController {
 		if (logger.isDebugEnabled()) {
 			logger.debug("received get request for Project [{}]", projectName);
 		}
+
 		Project project;
 		try {
 			project = projectService.retrieveProject(projectName);
@@ -188,6 +189,7 @@ public class TestHarnessController {
 			response.setStatus(HttpStatus.OK.value());
 		else
 			response.setStatus(HttpStatus.NOT_FOUND.value());
+
 		return project;
 	}
 
@@ -251,6 +253,7 @@ public class TestHarnessController {
 		logger.info("received post request for test execution on Project [{}] with test id [{}]", projectName, testId);
 		summary = "received post request for test execution on Project " + projectName + " with test id " + testId
 				+ "\n";
+
 		try {
 			Thread.sleep(2000);
 			Project project = projectService.retrieveProject(projectName);
@@ -259,11 +262,8 @@ public class TestHarnessController {
 			for (int i = 0; i < workspaceState.size(); i++) {
 				Object viewObject = workspaceState.get(i);
 				LinkedHashMap<String, String> view = (LinkedHashMap<String, String>) viewObject;
-//				System.out.println(view.get("name"));
-//				System.out.println(view.get("tab"));
 				String tab = view.get("tab");
 				String tabHTML = new String(Base64.getDecoder().decode(tab));
-//				System.out.println(tabHTML + "\n\n");
 				Document doc = Jsoup.parse(tabHTML);
 				Element test = doc.getElementById("modal-" + testId);
 				if (test != null) {
@@ -274,8 +274,6 @@ public class TestHarnessController {
 						summary += "One or more Tests FAIL\n";
 						return new ResponseEntity<>(summary, HttpStatus.INTERNAL_SERVER_ERROR);
 					}
-				} else {
-					break;
 				}
 			}
 
@@ -293,9 +291,11 @@ public class TestHarnessController {
 		logger.info(jsonTest);
 		try {
 			LinkedHashMap<String, Object> result = new ObjectMapper().readValue(jsonTest, LinkedHashMap.class);
+			@SuppressWarnings("unused")
 			String id = (String) result.get("id");
 			String suiteName = (String) result.get("name");
 			String topology = (String) result.get("topology");
+			@SuppressWarnings("unused")
 			String cronSchedule = (String) result.get("cron-schedule");
 			String gitRepo = (String) result.get("git-repo");
 			String appPortNo = (String) result.get("app-port-no");
@@ -455,6 +455,7 @@ public class TestHarnessController {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean processRdbmsAssertionTest(LinkedHashMap<String, Object> testAssertion, String suiteName) {
 		logger.info("\n*** processRdbmsAssertionTest() commenced ***\n");
 		summary += "\n*** processRdbmsAssertionTest() commenced ***\n\n";
@@ -496,7 +497,7 @@ public class TestHarnessController {
 			summary += "Expected row count " + expectedRowCount + "\n";
 			logger.info("\n*** processRdbmsAssertionTest() complete ***\n");
 			summary += "\n*** processRdbmsAssertionTest() complete ***\n";
-			
+
 			if (expectedOperator.equals("=")) {
 				if (size == Integer.valueOf(expectedRowCount)) {
 					logger.info("\n*** Test PASS ***\n");
@@ -557,7 +558,7 @@ public class TestHarnessController {
 					return true;
 				}
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -624,17 +625,4 @@ public class TestHarnessController {
 		String directory = split[split.length - 1].replace(".git", "");
 		System.out.println(directory);
 	}
-
-//	@RequestMapping(method = RequestMethod.GET, produces = "application/json", value = "/abc")
-//	public String test(HttpServletRequest request, HttpServletResponse response) {
-//		System.out.println("**** Test Invoked ****");
-//		return "{\"name\":\"test\"}";
-//	}
-//
-//	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json", value = "/def")
-//	@ResponseBody
-//	public String test2(@RequestBody String data, HttpServletRequest request, HttpServletResponse response) {
-//		System.out.println("**** Test Invoked ****\n" + data);
-//		return "{\"name\":\"test\"}";
-//	}
 }

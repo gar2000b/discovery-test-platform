@@ -3,7 +3,7 @@ package com.onlineinteract.exception;
 /**
  * Thrown when a bad request (400) is encountered.
  * 
- * @author 316746874
+ * @author Gary Black
  * 
  */
 public class BadRequestException extends AppRuntimeException {
