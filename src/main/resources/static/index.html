@@ -97,12 +97,41 @@
                     <td colspan="2"><b>Is the app already running?  - <input type="radio" name="running" id="runningYes" value="yes" checked="checked" onchange="removeNotRunningRows();"> Yes <input type="radio" name="running" id="runningNo" value="no" onchange="addNotRunningRows();"> No</b></td>
                 </tr>
                 <tr class="top-level" id="add-test-row">
-                    <td colspan="2"><input type="button" value=" + " onclick="addTest();" /> <b>Add Test</b></td>
+                    <td colspan="2"><input type="button" value=" + " onclick="addTest(this.parentNode.parentNode.parentNode.parentNode);" /> <b>Add Test</b></td>
                 </tr>
                 <tr class="top-level color-grouping-1">
                     <td></td>
                     <td align="right"><input type="button" id="update" value="Update"
                         onclick="closeServiceModel();" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div id="eteModal" class="modal">
+        <!-- Modal content -->
+        <div class="it-modal-content" align="center">
+            <div align="right" style="background-color: #295c85; height: 40px;">
+                <span class="close" onclick="closeETEModel();">&times;&nbsp;</span>
+            </div>
+            <table id="eteTestTable" class="color-grouping-1">
+                <tr class="top-level">
+                    <td><b>Name:</b></td>
+                    <td><input name="ete-name-input" id="ete-name-input" type="text"
+                        size="60" value="" /></td>
+                </tr>
+                <tr class="top-level">
+                    <td><b>Topology:</b></td>
+                    <td><input name="ete-topology-input"
+                        id="ete-topology-input" type="text" size="60" /></td>
+                </tr>
+                <tr class="top-level" id="add-test-row">
+                    <td colspan="2"><input type="button" value=" + " onclick="addTest(this.parentNode.parentNode.parentNode.parentNode);" /> <b>Add Test</b></td>
+                </tr>
+                <tr class="top-level color-grouping-1">
+                    <td></td>
+                    <td align="right"><input type="button" id="eteUpdate" value="Update"
+                        onclick="closeETEModel();" /></td>
                 </tr>
             </table>
         </div>

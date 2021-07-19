@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlineinteract.DiscoveryTestApplication;
 import com.onlineinteract.UriTemplates;
 import com.onlineinteract.exception.BadRequestException;
 import com.onlineinteract.model.Project;
@@ -264,10 +268,10 @@ public class TestHarnessController {
 				Element test = doc.getElementById("modal-" + testId);
 				if (test != null) {
 					if (parseAndExecuteTests(test)) {
-						summary += "PASS\n";
+						summary += "All Tests PASS\n";
 						return new ResponseEntity<>(summary, HttpStatus.OK);
 					} else {
-						summary += "FAIL\n";
+						summary += "One or more Tests FAIL\n";
 						return new ResponseEntity<>(summary, HttpStatus.INTERNAL_SERVER_ERROR);
 					}
 				} else {
@@ -303,12 +307,15 @@ public class TestHarnessController {
 			logger.info("Test name is: " + suiteName + " with a topology of: " + topology + " on git: " + gitRepo);
 			summary += "Test name is: " + suiteName + " with a topology of: " + topology + " on git: " + gitRepo + "\n";
 
-			if (gitRepo != null) {
+			if (gitRepo != null)
 				spinUpApplicationService(gitRepo, appPortNo, configOverrides);
-				boolean testsResult = executeTests(tests, suiteName);
+
+			boolean testsResult = executeTests(tests, suiteName);
+
+			if (gitRepo != null)
 				shutdownApplication();
-				return testsResult;
-			}
+
+			return testsResult;
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -414,6 +421,8 @@ public class TestHarnessController {
 
 			if (!processTest(testInjection, testAssertion, suiteName))
 				return false;
+			else
+				continue;
 		}
 
 		return true;
@@ -430,7 +439,132 @@ public class TestHarnessController {
 			logger.info("TODO: FTP");
 		if (injectionType.equals("rdbms"))
 			logger.info("TODO: RDBMS");
+		if (injectionType.equals("assertion"))
+			return processAssertionOnlyTest(testInjection, testAssertion, suiteName);
 
+		return false;
+	}
+
+	private boolean processAssertionOnlyTest(LinkedHashMap<String, Object> testInjection,
+			LinkedHashMap<String, Object> testAssertion, String suiteName) {
+
+		String assertionType = (String) testAssertion.get("assertion-type");
+		if (assertionType.equals("rdbms"))
+			return processRdbmsAssertionTest(testAssertion, suiteName);
+
+		return false;
+	}
+
+	private boolean processRdbmsAssertionTest(LinkedHashMap<String, Object> testAssertion, String suiteName) {
+		logger.info("\n*** processRdbmsAssertionTest() commenced ***\n");
+		summary += "\n*** processRdbmsAssertionTest() commenced ***\n\n";
+
+		String columns = (String) testAssertion.get("columns");
+		String table = (String) testAssertion.get("table");
+		String expectedOperator = (String) testAssertion.get("expectedOperator");
+		String expectedRowCount = (String) testAssertion.get("expectedRowCount");
+		ArrayList<LinkedHashMap<String, String>> conditions = (ArrayList<LinkedHashMap<String, String>>) testAssertion
+				.get("conditions");
+
+		String query = "SELECT " + columns + " FROM " + table + " WHERE ";
+
+		for (LinkedHashMap<String, String> condition : conditions) {
+			String varA = condition.get("varA");
+			String operator = condition.get("operator");
+			String varB = condition.get("varB");
+			query += varA + " " + operator + " '" + varB + "' AND ";
+			logger.info(varA + " - " + operator + " - " + varB);
+		}
+
+		if (query.substring(query.length() - 4, query.length()).contains("AND "))
+			query = query.substring(0, query.length() - 5) + ";";
+
+		logger.info("Final Query: " + query);
+		summary += "Final Query: " + query + "\n\n";
+
+		Statement statement;
+		try {
+			statement = DiscoveryTestApplication.databaseConnection.createStatement();
+			statement.setQueryTimeout(60);
+			statement.setFetchSize(1000);
+			ResultSet rs = statement.executeQuery(query);
+			rs.last();
+			int size = rs.getRow();
+			logger.info("Expected operator " + expectedOperator);
+			summary += "Expected operator " + expectedOperator + "\n";
+			logger.info("Expected row count " + expectedRowCount);
+			summary += "Expected row count " + expectedRowCount + "\n";
+			logger.info("\n*** processRdbmsAssertionTest() complete ***\n");
+			summary += "\n*** processRdbmsAssertionTest() complete ***\n";
+			
+			if (expectedOperator.equals("=")) {
+				if (size == Integer.valueOf(expectedRowCount)) {
+					logger.info("\n*** Test PASS ***\n");
+					summary = "*** Test PASS ***\n\n" + summary;
+					summary += "\n*** Test PASS ***\n\n";
+					rs.close();
+					statement.close();
+					return true;
+				}
+			}
+			if (expectedOperator.equals(">")) {
+				if (size > Integer.valueOf(expectedRowCount)) {
+					logger.info("\n*** Test PASS ***\n");
+					summary = "*** Test PASS ***\n\n" + summary;
+					summary += "\n*** Test PASS ***\n\n";
+					rs.close();
+					statement.close();
+					return true;
+				}
+			}
+			if (expectedOperator.equals(">=")) {
+				if (size >= Integer.valueOf(expectedRowCount)) {
+					logger.info("\n*** Test PASS ***\n");
+					summary = "*** Test PASS ***\n\n" + summary;
+					summary += "\n*** Test PASS ***\n\n";
+					rs.close();
+					statement.close();
+					return true;
+				}
+			}
+			if (expectedOperator.equals("<")) {
+				if (size < Integer.valueOf(expectedRowCount)) {
+					logger.info("\n*** Test PASS ***\n");
+					summary = "*** Test PASS ***\n\n" + summary;
+					summary += "\n*** Test PASS ***\n\n";
+					rs.close();
+					statement.close();
+					return true;
+				}
+			}
+			if (expectedOperator.equals("<=")) {
+				if (size <= Integer.valueOf(expectedRowCount)) {
+					logger.info("\n*** Test PASS ***\n");
+					summary = "*** Test PASS ***\n\n" + summary;
+					summary += "\n*** Test PASS ***\n\n";
+					rs.close();
+					statement.close();
+					return true;
+				}
+			}
+			if (expectedOperator.equals("!=")) {
+				if (size != Integer.valueOf(expectedRowCount)) {
+					logger.info("\n*** Test PASS ***\n");
+					summary = "*** Test PASS ***\n\n" + summary;
+					summary += "\n*** Test PASS ***\n\n";
+					rs.close();
+					statement.close();
+					return true;
+				}
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		logger.info("\n*** Test FAIL ***\n");
+		summary = "*** Test FAIL ***\n\n" + summary;
+		summary += "\n*** Test FAIL ***\n";
 		return false;
 	}
 

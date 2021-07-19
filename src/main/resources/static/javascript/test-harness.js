@@ -27,6 +27,10 @@ document.onkeydown = function(evt) {
     	if (modal.style.display == "block") {
     		closeServiceModel();
     	}
+    	var modal = document.getElementById('eteModal');
+    	if (modal.style.display == "block") {
+    		closeETEModel();
+    	}
     	var modal = document.getElementById('consoleModal');
     	if (modal.style.display == "block") {
     		closeConsoleModel();
@@ -441,7 +445,6 @@ function addNewEndToEndTest() {
 		var rowLength = table[0].getElementsByTagName("tr").length;
 		var row = table[0].insertRow(rowLength);
 		row.align = "center";
-		row.id = "test-" + tabId + "-" + rowLength;
 		
 		var cell0 = row.insertCell(0);
 		var cell1 = row.insertCell(1);
@@ -455,18 +458,33 @@ function addNewEndToEndTest() {
 		var cell9 = row.insertCell(9);
 		var cell10 = row.insertCell(10);
 		
+		var largestNumber = 1;
+		var rows = table[0].getElementsByTagName("tr");
+		for(var i = 1; i < rows.length; i++) {
+			id = rows[i].id;
+			var startPos = id.indexOf("-", id.indexOf("-") + 1) + 1;
+			var number = parseInt(id.substring(startPos), 10);
+			if (number > largestNumber) {
+				largestNumber = number;
+			}
+		}
+		largestNumber++;
+		row.id = "test-" + tabId + "-" + largestNumber;
+		
 		cell0.innerHTML = "<img alt='status' src='images/pass.png'>";
 		cell1.innerHTML = "ETE";
-		cell2.innerHTML = "<a href='#' onclick='openModal(\"itModal\");'>New End-to-End Test</a>";
-		cell3.innerHTML = "<a href='https://www.google.co.uk' target='_blank'>topology-link</a>";
+		cell2.innerHTML = "<a id='test-name-" + row.id + "' href='#' onclick='openETEModal(\"modal-" + row.id + "\");'>New End-To-End Test</a>";
+		cell3.innerHTML = "<a id='topology-" + row.id + "' href='https://www.google.co.uk' target='_blank'>topology-link</a>";
 		cell4.innerHTML = "01-01-2019 @ 00:00:00";
 		cell5.innerHTML = "01-01-2019 @ 00:00:00";
-		cell6.innerHTML = "0 ms";		
+		cell6.innerHTML = "0 ms";
+		cell7.id = "cron-" + row.id;
 		cell7.innerHTML = "N/A";
 		cell8.innerHTML = "<img alt=\"status\" src=\"images/console.png\" onclick=\"openConsoleModal();\">";
 		cell9.innerHTML = "<input type='button' value='Delete' onclick='deleteTest(\"" + row.id + "\");' />";
-		cell10.innerHTML = "<input type='button' value='Execute' />";
+		cell10.innerHTML = "<input type='button' value='Execute' onclick='executeTest(\"" + row.id + "\", this);' />";
 		
+		injectTestEntry("modal-" + row.id, "tabs-" + tabId);
 		save();
 	}
 }
@@ -556,9 +574,42 @@ function openModal(entry) {
 		}
 		if (testSuite["tests"] && testSuite["tests"].length > 0) {
 			for (var i = 0; i < testSuite["tests"].length; i++) {
-				addTest();
+				addTest(document.getElementById('itTestTable'));
 			}
 			var table = document.getElementById('itTestTable');
+			var rows = table.getElementsByClassName("test-level");
+//			alert(rows.length);
+			for (var i = 0; i < rows.length; i++) {
+				var row = rows[i];
+				var testTable = row.children[0].children[1];
+//				alert("i: " + i);
+				var test = testSuite["tests"][i];
+				var injectionRows = testTable.getElementsByClassName("test-injection-row");
+				var assertionRows = testTable.getElementsByClassName("test-assertion-row");
+				openInjectionRows(injectionRows, test);
+				openAssertionRows(assertionRows, test);
+			}
+		}
+	}
+}
+
+function openETEModal(entry) {
+	var modal = document.getElementById('eteModal');
+	modal.style.display = "block";
+	document.getElementById('eteUpdate').setAttribute( "onClick", "javascript: updateEteTestEntry('" + entry + "');" );
+
+	// TODO - read hidden input value json and convert to type.
+//	alert(document.getElementById(entry).value);
+	if (document.getElementById(entry).value) {
+		var testSuite = JSON.parse(document.getElementById(entry).value);
+		document.getElementById('ete-name-input').value = testSuite.name;
+		document.getElementById('ete-topology-input').value = testSuite.topology;
+//		alert(testSuite["tests"].length);
+		if (testSuite["tests"] && testSuite["tests"].length > 0) {
+			for (var i = 0; i < testSuite["tests"].length; i++) {
+				addTest(document.getElementById('eteTestTable'));
+			}
+			var table = document.getElementById('eteTestTable');
 			var rows = table.getElementsByClassName("test-level");
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
@@ -577,6 +628,10 @@ function openModal(entry) {
 function openInjectionRows(injectionRows, test) {
 	test = test["test-pair"][0];
 	var injectionType = test["injection-type"];
+//	alert(injectionType);
+	if (injectionType == 'select') {
+		openInjectionSelect(injectionRows, test);
+	}
 	if (injectionType == 'http') {
 		openInjectionHttp(injectionRows, test);
 	}
@@ -589,6 +644,17 @@ function openInjectionRows(injectionRows, test) {
 	if (injectionType == 'rdbms') {
 		openInjectionRdbms(injectionRows, test);
 	}
+	if (injectionType == 'assertion') {
+		openInjectionAssertion(injectionRows, test);
+	}
+}
+
+function openInjectionAssertion(injectionRows, test) {
+	injectionRows[0].getElementsByTagName('select')[0].value = "assertion";
+}
+
+function openInjectionSelect(injectionRows, test) {
+	injectionRows[0].getElementsByTagName('select')[0].value = "select";
 }
 
 function openInjectionHttp(injectionRows, test) {
@@ -715,7 +781,25 @@ function openAssertionFtp(assertionRows, test) {
 }
 
 function openAssertionRdbms(assertionRows, test) {
-	// TODO
+	assertionRows[0].getElementsByTagName('select')[0].value = "rdbms";
+	updateTestAssertionType(assertionRows[0].getElementsByTagName('select')[0]);
+	assertionRows[2].getElementsByTagName('input')[0].value = test["columns"];
+	assertionRows[3].getElementsByTagName('input')[0].value = test["table"];
+	assertionRows[5].getElementsByTagName('select')[0].value = test["expectedOperator"];
+	assertionRows[5].getElementsByTagName('input')[0].value = test["expectedRowCount"];
+	
+	conditions = test["conditions"];
+	for (var i = 0; i < conditions.length; i++) {
+		addRdbmsSelectCondition(assertionRows[4].getElementsByTagName('input')[0]);
+	}
+	
+	conditionRows = assertionRows[0].parentNode.parentNode.getElementsByClassName("condition-row");
+	
+	for (var i = 0; i < conditions.length; i++) {
+		conditionRows[i].children[1].children[0].value = conditions[i]["varA"];
+		conditionRows[i].children[1].children[1].value = conditions[i]["operator"];
+		conditionRows[i].children[1].children[2].children[0].value = conditions[i]["varB"];
+	}
 }
 
 function updateTestEntry(entry) {
@@ -757,8 +841,9 @@ function updateTestEntry(entry) {
 		var testTable = row.children[0].children[1];
 		var injectionRows = testTable.getElementsByClassName("test-injection-row");
 		var assertionRows = testTable.getElementsByClassName("test-assertion-row");
+		var conditionRows = testTable.getElementsByClassName("condition-row");
 		processInjectionRows(injectionRows, test);
-		processAssertionRows(assertionRows, test);
+		processAssertionRows(assertionRows, conditionRows, test);
 		testSuite["tests"].push(test);
 	}
 	
@@ -772,6 +857,8 @@ function updateTestEntry(entry) {
 	document.getElementById(testId).innerHTML = document.getElementById('name-input').value;
 	
 	topologyId = entry.replace('modal-test', 'topology-test');
+//	alert(topologyId);
+//	alert(document.getElementById('topology-input').value);
 	document.getElementById(topologyId).href = document.getElementById('topology-input').value;
 	
 	if(document.getElementById('cron-schedule') != null) {
@@ -784,6 +871,41 @@ function updateTestEntry(entry) {
 	closeServiceModel();
 }
 
+function updateEteTestEntry(entry) {
+	var testSuite = {};
+	testSuite["id"] = entry;
+	testSuite["name"] = document.getElementById('ete-name-input').value;
+	testSuite["topology"] = document.getElementById('ete-topology-input').value;
+	
+	var table = document.getElementById('eteTestTable');
+	var rows = table.getElementsByClassName("test-level");
+	testSuite["tests"] = [];
+	for (var i = 0; i < rows.length; i++) {
+		var test = {}
+		test["test-pair"] = [];
+		var row = rows[i];
+		var testTable = row.children[0].children[1];
+		var injectionRows = testTable.getElementsByClassName("test-injection-row");
+		var assertionRows = testTable.getElementsByClassName("test-assertion-row");
+		var conditionRows = testTable.getElementsByClassName("condition-row");
+		processInjectionRows(injectionRows, test);
+		processAssertionRows(assertionRows, conditionRows, test);
+		testSuite["tests"].push(test);
+	}
+	
+	document.getElementById(entry).value = JSON.stringify(testSuite);
+	
+	testId = entry.replace('modal-test', 'test-name-test');
+	document.getElementById(testId).innerHTML = document.getElementById('ete-name-input').value;
+	
+	topologyId = entry.replace('modal-test', 'topology-test');
+	document.getElementById(topologyId).href = document.getElementById('ete-topology-input').value;
+	
+	save();
+	resetETEModal();
+	closeETEModel();
+}
+
 function resetServiceModal() {
 	document.getElementById('name-input').value = "";
 	document.getElementById('topology-input').value = "";
@@ -794,13 +916,27 @@ function resetServiceModal() {
 	document.getElementById("runningYes").click();
 	var table = document.getElementById('itTestTable');
 	var rows = table.getElementsByClassName("test-level");
-	for (var i = 0; i < rows.length; i++) {
+	for (var i = rows.length - 1; i >= 0; i--) {
+		rows[i].remove();
+	}
+}
+
+function resetETEModal() {
+	document.getElementById('name-input').value = "";
+	document.getElementById('topology-input').value = "";
+	var table = document.getElementById('eteTestTable');
+	var rows = table.getElementsByClassName("test-level");
+	for (var i = rows.length - 1; i >= 0; i--) {
 		rows[i].remove();
 	}
 }
 
 function processInjectionRows(injectionRows, test) {
 	var injectionType = injectionRows[0].children[1].children[0].value;
+	if (injectionType == 'select') {
+//		alert('abc: ' + injectionType);
+		processInjectionSelect(injectionRows, test);
+	}
 	if (injectionType == 'http') {
 		processInjectionHttp(injectionRows, test);
 	}
@@ -813,6 +949,24 @@ function processInjectionRows(injectionRows, test) {
 	if (injectionType == 'rdbms') {
 		processInjectionRdbms(injectionRows, test);
 	}
+	if (injectionType == 'assertion') {
+//		alert('abc: ' + injectionType);
+		processInjectionAssertion(injectionRows, test);
+	}
+}
+
+function processInjectionAssertion(injectionRows, test) {
+	var testInjection = {};
+	testInjection["type"] = "injection";
+	testInjection["injection-type"] = injectionRows[0].getElementsByTagName('select')[0].value;
+	test["test-pair"].push(testInjection);
+}
+
+function processInjectionSelect(injectionRows, test) {
+	var testInjection = {};
+	testInjection["type"] = "injection";
+	testInjection["injection-type"] = injectionRows[0].getElementsByTagName('select')[0].value;
+	test["test-pair"].push(testInjection);
 }
 
 function processInjectionHttp(injectionRows, test) {
@@ -855,7 +1009,7 @@ function processInjectionRdbms(injectionRows, test) {
 	// TODO
 }
 
-function processAssertionRows(assertionRows, test) {
+function processAssertionRows(assertionRows, conditionRows, test) {
 	var assertionType = assertionRows[0].children[1].children[0].value;
 	if (assertionType == 'http') {
 		processAssertionHttp(assertionRows, test);
@@ -870,7 +1024,7 @@ function processAssertionRows(assertionRows, test) {
 		processAssertionFtp(assertionRows, test);
 	}
 	if (assertionType == 'rdbms') {
-		processAssertionRdbms(assertionRows, test);
+		processAssertionRdbms(assertionRows, conditionRows, test);
 	}
 }
 
@@ -898,13 +1052,36 @@ function processAssertionFtp(assertionRows, test) {
 	// TODO
 }
 
-function processAssertionRdbms(assertionRows, test) {
-	// TODO
+function processAssertionRdbms(assertionRows, conditionRows, test) {
+	var testAssertion = {};
+	testAssertion["type"] = "assertion";
+	testAssertion["assertion-type"] = assertionRows[0].getElementsByTagName('select')[0].value;
+	testAssertion["columns"] = assertionRows[2].getElementsByTagName('input')[0].value;
+	testAssertion["table"] = assertionRows[3].getElementsByTagName('input')[0].value;
+	testAssertion["expectedOperator"] = assertionRows[5].getElementsByTagName('select')[0].value;
+	testAssertion["expectedRowCount"] = assertionRows[5].getElementsByTagName('input')[0].value;
+	
+	testAssertion["conditions"] = [];
+	for (var i = 0; i < conditionRows.length; i++) {
+		var condition = {}
+		condition["varA"] = conditionRows[i].children[1].children[0].value;
+		condition["operator"] = conditionRows[i].children[1].children[1].value;
+		condition["varB"] = conditionRows[i].children[1].children[2].children[0].value;
+		testAssertion["conditions"].push(condition);
+	}
+
+	test["test-pair"].push(testAssertion);
 }
 
 function closeServiceModel() {
 	resetServiceModal();
 	var modal = document.getElementById('itModal');
+	modal.style.display = "none";
+}
+
+function closeETEModel() {
+	resetETEModal();
+	var modal = document.getElementById('eteModal');
 	modal.style.display = "none";
 }
 
@@ -1066,12 +1243,12 @@ function removeConfigEntry(button) {
 	button.parentNode.parentNode.remove();
 }
 
-function addTest() {
-	var table = document.getElementById('itTestTable');
+function addTest(table) {
 	var rowLength = table.rows.length;
 //	var rows = table.getElementsByClassName("top-level");
 //	for (var i = 0; i < rows.length; i++) {
 //		if (rows[i].id == "add-test-row") {
+//			alert('Adding Test');
 			var row = table.insertRow(rowLength - 2);
 			row.className = "test-level";
 			var cell0 = row.insertCell(0);
@@ -1087,7 +1264,7 @@ function addTest() {
 						</td>
 						<td colspan='2'>
 							<select onchange='updateTestInjectionType(this);'>
-								<option value=''>Please select</option>
+								<option value='select'>Please select</option>
 								<option value='http'>HTTP</option>
 								<option value='kafka'>KAFKA</option>
 								<option value='ftp'>FTP</option>
@@ -1102,7 +1279,7 @@ function addTest() {
 						</td>
 						<td colspan='2'>
 							<select onchange='updateTestAssertionType(this);'>
-								<option value=''>Please select</option>
+								<option value='select'>Please select</option>
 								<option value='http'>HTTP - (on injection response)</option>
 								<option value='http-downstream'>HTTP - (downstream call intercept)</option>
 								<option value='kafka'>KAFKA</option>
@@ -1363,32 +1540,22 @@ function populateRdbmsAssertionEntry(select) {
 	var position = table.children.length - 1;
 	
 	var row = table.insertRow(++position);
-	row.className = 'test-assertion-row rdbms-statement-field-row';
+	row.className = 'test-assertion-row';
 	var cell0 = row.insertCell(0);
 	cell0.colSpan = "1";
 	cell0.innerHTML = "<b>SELECT Statement:<b>";
 
 	var row = table.insertRow(++position);
-	row.className = 'test-assertion-row rdbms-statement-field-row';
+	row.className = 'test-assertion-row';
 	var cell0 = row.insertCell(0);
 	cell0.colSpan = "1";
 	cell0.innerHTML = "<b>Columns:</b>";
 	var cell1 = row.insertCell(1);
 	cell1.colSpan = "4";
 	cell1.innerHTML = "<input class='rdbmsTableColumnsTextBox' type='text' placeholder='Enter comma delimited column names' size='60' />";
-
-	var row = table.insertRow(++position);
-	row.className = 'test-assertion-row rdbms-statement-field-row';
-	row.id = 'condition-entry-row';
-	var cell0 = row.insertCell(0);
-	cell0.colSpan = "1";
-	cell0.innerHTML = "<b>Conditions:</b>";
-	var cell1 = row.insertCell(1);
-	cell1.colSpan = "1";
-	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsSelectCondition(this);' /> <b>Add Condition<b>";
 	
 	var row = table.insertRow(++position);
-	row.className = 'test-assertion-row rdbms-statement-field-row';
+	row.className = 'test-assertion-row';
 	var cell0 = row.insertCell(0);
 	cell0.colSpan = "1";
 	cell0.innerHTML = "<b>Table:</b>";
@@ -1398,12 +1565,39 @@ function populateRdbmsAssertionEntry(select) {
 	
 	var row = table.insertRow(++position);
 	row.className = 'test-assertion-row';
+	row.id = 'condition-entry-row';
+	var cell0 = row.insertCell(0);
+	cell0.colSpan = "1";
+	cell0.innerHTML = "<b>Conditions:</b>";
+	var cell1 = row.insertCell(1);
+	cell1.colSpan = "1";
+	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsSelectCondition(this);' /> <b>Add Condition<b> (AND'd together by default in current version)";
+	
+	var row = table.insertRow(++position);
+	row.className = 'test-assertion-row';
 	var cell0 = row.insertCell(0);
 	cell0.colSpan = "1";
 	cell0.innerHTML = "<b>Expected Row Count:</b>";
+	
 	var cell1 = row.insertCell(1);
 	cell1.colSpan = "1";
-	cell1.innerHTML = "<input type='text' placeholder='Enter expected row count' />";
+	cell1.innerHTML =  `
+		<select class="sqlStatementSelect" onchange='adjustConditionTextBox(this)'>
+			<option value='='>=</option>
+			<option value='>'>></option>
+			<option value='>='>>=</option>
+			<option value='<'><</option>
+			<option value='<='><=</option>
+			<option value='!='>!=</option>
+		</select>
+		<span><input type='text' placeholder='Enter expected row count' size='13' /></span>
+		`;
+	
+//	conditionInnerHtml += "<span><input type='text' placeholder='Enter expected row count' size='13' /></span>";
+	
+//	var cell2 = row.insertCell(2);
+//	cell2.colSpan = "1";
+//	cell2.innerHTML = "<input type='text' placeholder='Enter expected row count' />";
 }
 
 function populateKafkaInjectionEntry(select) {
@@ -1469,7 +1663,7 @@ function populateRdbmsInjectionEntry(select) {
 	cell0.innerHTML = "<b>Conditions:</b>";
 	var cell1 = row.insertCell(1);
 	cell1.colSpan = "1";
-	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsSelectCondition(this);' /> <b>Add Condition<b>";
+	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsSelectCondition(this);' /> <b>Add Condition<b> (AND'd together by default in current version)";
 	
 	var row = table.insertRow(5);
 	row.className = 'test-injection-row rdbms-statement-field-row';
@@ -1491,19 +1685,19 @@ function addRdbmsSelectCondition(button) {
 		rdbmsTableColumnsTextBox.title = "Disabled if conditions are added. Delete conditions to re-enable.";
 		for (var i = 0; i < rows.length; i++) {
 			if (rows[i].id == "condition-entry-row") {
-				if (table.getElementsByClassName("condition-row").length > 0) {
-					var row = table.insertRow(i+1);
-					row.className = "condition-row";
-					var cell0 = row.insertCell(0);
-					cell0.innerHTML = "";
-					var cell1 = row.insertCell(1);
-					cell1.innerHTML = `
-					<select class='sqlConditionAndOrSelect' onchange=''>
-						<option value='and'>AND</option>
-						<option value='or'>OR</option>
-					</select>
-					`;			
-				}
+//				if (table.getElementsByClassName("condition-row").length > 0) {
+//					var row = table.insertRow(i+1);
+//					row.className = "condition-row";
+//					var cell0 = row.insertCell(0);
+//					cell0.innerHTML = "";
+//					var cell1 = row.insertCell(1);
+//					cell1.innerHTML = `
+//					<select class='sqlConditionAndOrSelect' onchange=''>
+//						<option value='and'>AND</option>
+//						<option value='or'>OR</option>
+//					</select>
+//					`;			
+//				}
 				
 				var row = table.insertRow(i+1);
 				row.className = "condition-row";
@@ -1513,22 +1707,22 @@ function addRdbmsSelectCondition(button) {
 				if (rdbmsTableColumns[0] != '*') {
 					rdbmsTableColumns = rdbmsTableColumns.replace(/ /g, "");
 					var columns = rdbmsTableColumns.split(",");
-					var conditionInnerHtml = "<input type='text' name='conditionColumnName' list='columnList'/><datalist id='columnList'>";
-					columns.forEach(col => {
-						conditionInnerHtml += "<option value='" + col + "'>" + col + "</option>";
-					});			
-					conditionInnerHtml += "</datalist>";	
+					var conditionInnerHtml = "<input type='text' name='conditionColumnName' list='columnList'/><!--<datalist id='columnList'>-->";
+//					columns.forEach(col => {
+//						conditionInnerHtml += "<option value='" + col + "'>" + col + "</option>";
+//					});			
+//					conditionInnerHtml += "</datalist>";	
 				} else {
 					var conditionInnerHtml = "<input type='text' placeholder='Enter column name' size='16'/>";
 				}		
 				conditionInnerHtml +=  `
 				<select class="sqlStatementSelect" onchange='adjustConditionTextBox(this)'>
-					<option value='equal'>=</option>
-					<option value='greater'>></option>
-					<option value='greater-equal'>>=</option>
-					<option value='less'><</option>
-					<option value='less-equal'><=</option>
-					<option value='not-equal'>!=</option>
+					<option value='='>=</option>
+					<option value='>'>></option>
+					<option value='>='>>=</option>
+					<option value='<'><</option>
+					<option value='<='><=</option>
+					<option value='!='>!=</option>
 					<option value='between'>IS BETWEEN</option>
 					<option value='not-between'>IS NOT BETWEEN</option>
 					<option value='like'>IS LIKE</option>
@@ -1779,7 +1973,7 @@ function addSelectFields(rows) {
 	cell0.innerHTML = "<b>Conditions:</b>";
 	var cell1 = row.insertCell(1);
 	cell1.colSpan = "1";
-	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsSelectCondition(this);' /> <b>Add Condition<b>";
+	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsSelectCondition(this);' /> <b>Add Condition<b> (AND'd together by default in current version)";
 	
 	var row = rows[2];
 	var cell0 = row.insertCell(0);
@@ -1807,7 +2001,7 @@ function addUpdateFields(rows) {
 	cell0.innerHTML = "<b>Conditions:</b>";
 	var cell1 = row.insertCell(1);
 	cell1.colSpan = "1";
-	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsCondition(this);' /> <b>Add Condition<b>";
+	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsCondition(this);' /> <b>Add Condition<b> (AND'd together by default in current version)";
 	
 	var row = rows[2];
 	var cell0 = row.insertCell(0);
@@ -1845,7 +2039,7 @@ function addDeleteFields(rows) {
 	cell0.innerHTML = "<b>Conditions:</b>";
 	var cell1 = row.insertCell(1);
 	cell1.colSpan = "1";
-	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsCondition(this);' /> <b>Add Condition<b>";
+	cell1.innerHTML = "<input type='button' value=' + ' onclick='addRdbmsCondition(this);' /> <b>Add Condition<b> (AND'd together by default in current version)";
 
 	var row = rows[1];
 	var cell0 = row.insertCell(0);
