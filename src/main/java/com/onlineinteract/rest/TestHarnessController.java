@@ -38,11 +38,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineinteract.DiscoveryTestApplication;
-import com.onlineinteract.UriTemplates;
 import com.onlineinteract.exception.BadRequestException;
 import com.onlineinteract.model.Project;
 import com.onlineinteract.model.Tabs;
 import com.onlineinteract.service.ProjectService;
+import com.onlineinteract.template.UriTemplates;
 
 @RestController()
 public class TestHarnessController {

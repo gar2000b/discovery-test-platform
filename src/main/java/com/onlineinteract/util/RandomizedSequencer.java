@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * RandomizedSequencer retrieves a randomized next value for various data types.
  * 
+ * @author Gary Black
+ * 
  */
 public class RandomizedSequencer {
 

@@ -1,4 +1,4 @@
-package com.onlineinteract;
+package com.onlineinteract.template;
 
 /**
  * URITemplates defines the URI resources for REST access.

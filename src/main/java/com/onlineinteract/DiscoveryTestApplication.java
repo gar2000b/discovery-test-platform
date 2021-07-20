@@ -11,20 +11,42 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 
+/**
+ * 
+ * Main entry point for the Discovery Test Platform (Spring Boot Application).
+ * 
+ * @author Gary Black
+ *
+ */
+
 @SpringBootApplication
 @EnableAutoConfiguration()
 public class DiscoveryTestApplication {
-	
+
 	public static Connection databaseConnection;
 
-	public DiscoveryTestApplication() {
-	}
-
+	/**
+	 * Main entry point.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		connectDB();
 		SpringApplication.run(DiscoveryTestApplication.class, args);
 	}
-	
+
+	/**
+	 * This POC version of the app makes use of a temporary local mySQL with dummy,
+	 * default, throw away credentials. Subsequent revisions will abstract this
+	 * away.
+	 * 
+	 * To replicate, spin up a new instance of MariaDB and update the first x4
+	 * variables here. The schema for the current showcase is under
+	 * src/main/resources/schema.
+	 * 
+	 * Details on the applications used during the showcase will appear in the
+	 * dissertation paper.
+	 */
 	private static void connectDB() {
 		String dbUrl = "192.168.0.30";
 		String db = "loans";
@@ -59,6 +81,12 @@ public class DiscoveryTestApplication {
 		}
 	}
 
+	/**
+	 * As we are not using a DB connection pool, we use this quick keep alive method
+	 * to ensure the DB operation is uninterrupted.
+	 * 
+	 * @throws SQLException
+	 */
 	@Scheduled(fixedRate = 20000)
 	public void keepAlive() throws SQLException {
 		Statement statement = DiscoveryTestApplication.databaseConnection.createStatement();
