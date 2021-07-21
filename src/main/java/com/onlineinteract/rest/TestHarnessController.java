@@ -28,13 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.security.web.csrf.CsrfToken; TODO: uncomment to re-enable security
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+// import org.springframework.security.web.csrf.CsrfToken; TODO: uncomment to re-enable security
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineinteract.DiscoveryTestApplication;
@@ -44,6 +44,12 @@ import com.onlineinteract.model.Tabs;
 import com.onlineinteract.service.ProjectService;
 import com.onlineinteract.template.UriTemplates;
 
+/**
+ * Main Rest Controller for the Discovery platform POC.
+ * 
+ * @author Gary Black
+ *
+ */
 @RestController()
 public class TestHarnessController {
 
@@ -75,6 +81,13 @@ public class TestHarnessController {
 	// return token.getToken();
 	// }
 
+	/**
+	 * Returns the maximum session timeout
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(method = RequestMethod.GET, produces = "application/json", value = "/session-timeout")
 	@ResponseBody
 	public String sessionTimeout(HttpServletRequest request, HttpServletResponse response) {
@@ -238,7 +251,7 @@ public class TestHarnessController {
 	}
 
 	/**
-	 * Get project by name.
+	 * Main method for executing (all) Integration Tests (including ETE).
 	 * 
 	 * @param projectName projectName
 	 * @param request     HttpServletRequest
@@ -283,6 +296,12 @@ public class TestHarnessController {
 		return new ResponseEntity<>("executeTest(): ", HttpStatus.OK);
 	}
 
+	/**
+	 * Each test passed in is parsed out and executed returning success or fail.
+	 * 
+	 * @param test
+	 * @return boolean
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean parseAndExecuteTests(Element test) {
 		logger.info("\n*** parseAndExecuteTests() ***\n");
@@ -324,6 +343,12 @@ public class TestHarnessController {
 		return false;
 	}
 
+	/**
+	 * Individual Integration Test (or out-of-component test) applications are
+	 * shutdown with this method.
+	 * 
+	 * @throws IOException
+	 */
 	private void shutdownApplication() throws IOException {
 		logger.info("Shutting down application");
 		summary += "Shutting down application\n";
@@ -332,6 +357,14 @@ public class TestHarnessController {
 		exec.destroy();
 	}
 
+	/**
+	 * Individual Integration Test (or out-of-component test) applications are
+	 * checked out, compiled and spun up with this method.
+	 * 
+	 * @param gitRepo
+	 * @param appPortNo
+	 * @param configOverrides
+	 */
 	private void spinUpApplicationService(String gitRepo, String appPortNo,
 			ArrayList<LinkedHashMap<String, String>> configOverrides) {
 		applicationRunningFlag = false;
@@ -411,6 +444,13 @@ public class TestHarnessController {
 		}
 	}
 
+	/**
+	 * Actual test execution entry starts here.
+	 * 
+	 * @param tests
+	 * @param suiteName
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private boolean executeTests(ArrayList<LinkedHashMap<String, Object>> tests, String suiteName) {
 		for (LinkedHashMap<String, Object> test : tests) {

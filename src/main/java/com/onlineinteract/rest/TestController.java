@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 
 /**
  * 
- * Simple test controller
+ * Simple test controller to test out the post construct.
  * 
  * @author Gary Black
  * 
@@ -17,9 +17,6 @@ import org.springframework.stereotype.Controller;
 public class TestController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	TestController() {
-	}
 
 	@PostConstruct
 	private void test() {

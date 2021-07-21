@@ -14,6 +14,12 @@ import com.onlineinteract.service.ProjectService;
 import com.onlineinteract.service.ServiceRuntimeException;
 import com.onlineinteract.service.StoreRuntimeException;
 
+/**
+ * Main Project Service Implementation.
+ * 
+ * @author Gary Black
+ *
+ */
 @Service(value = ConfigConstants.PROJECT_SERVICE)
 public class ProjectServiceImpl implements ProjectService {
 
