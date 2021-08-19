@@ -10,35 +10,51 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+/**
+ * Redis Configuration
+ * 
+ * @author Gary Black
+ *
+ */
 @Configuration
 @ComponentScan("com.onlineinteract")
 public class RedisConfig {
 
-    private static final String REDIS_HOST = "kevin";
-    private static final int REDIS_PORT = 6379;
-    private static final int REDIS_DATABASE = 1;
+	private static final String REDIS_HOST = "kevin";
+	private static final int REDIS_PORT = 6379;
+	private static final int REDIS_DATABASE = 1;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName(REDIS_HOST);
-        configuration.setPort(REDIS_PORT);
-        configuration.setDatabase(REDIS_DATABASE);
+	/**
+	 * Create new JedisConnectionFactory bean.
+	 * 
+	 * @return JedisConnectionFactory
+	 */
+	@Bean
+	JedisConnectionFactory jedisConnectionFactory() {
+		RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+		configuration.setHostName(REDIS_HOST);
+		configuration.setPort(REDIS_PORT);
+		configuration.setDatabase(REDIS_DATABASE);
 
-        logger.info("**** using database: " + REDIS_DATABASE + " ****");
+		logger.info("**** using database: " + REDIS_DATABASE + " ****");
 
-        JedisConnectionFactory jedisConFactory = new JedisConnectionFactory(configuration);
-        return jedisConFactory;
-    }
+		JedisConnectionFactory jedisConFactory = new JedisConnectionFactory(configuration);
+		return jedisConFactory;
+	}
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        logger.info("**** redisTemplate() ****");
-        final RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
-        template.setConnectionFactory(jedisConnectionFactory());
-        template.setDefaultSerializer(new StringRedisSerializer());
-        return template;
-    }
+	/**
+	 * Create new RedisTemplate bean.
+	 * 
+	 * @return RedisTemplate
+	 */
+	@Bean
+	public RedisTemplate<String, Object> redisTemplate() {
+		logger.info("**** redisTemplate() ****");
+		final RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+		template.setConnectionFactory(jedisConnectionFactory());
+		template.setDefaultSerializer(new StringRedisSerializer());
+		return template;
+	}
 }

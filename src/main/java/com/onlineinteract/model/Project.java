@@ -4,6 +4,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Main project Data Model
+ * 
+ * @author Gary Black
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
     private Long projectId;

@@ -24,6 +24,11 @@ public class ConfigureDao {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
+	/**
+	 * Create RedisProjectDaoImpl bean.
+	 * 
+	 * @return ProjectDao
+	 */
 	@Bean(name = ConfigConstants.PROJECT_DAO)
 	public ProjectDao projectDao() {
 		if (logger.isDebugEnabled()) {

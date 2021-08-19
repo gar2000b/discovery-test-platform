@@ -21,6 +21,12 @@ import com.onlineinteract.service.ServiceRuntimeException;
 import com.onlineinteract.service.StoreRuntimeException;
 import com.onlineinteract.util.RandomizedSequencer;
 
+/**
+ * Implementation for Redis DAO.
+ * 
+ * @author Gary Black
+ *
+ */
 public class RedisProjectDaoImpl extends RedisBaseDao implements ProjectDao {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

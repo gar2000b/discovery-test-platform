@@ -4,6 +4,12 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+/**
+ * Redis Base DAO
+ * 
+ * @author Gary Black
+ *
+ */
 // @Repository
 public class RedisBaseDao {
 

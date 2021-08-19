@@ -1,5 +1,11 @@
 package com.onlineinteract.config;
 
+/**
+ * Configuration Constants.
+ * 
+ * @author Gary Black
+ *
+ */
 public class ConfigConstants {
 
 	// --------------------------------------------------

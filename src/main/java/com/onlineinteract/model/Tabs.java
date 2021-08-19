@@ -1,5 +1,11 @@
 package com.onlineinteract.model;
 
+/**
+ * Tabs Data Model making up the workspace state.
+ * 
+ * @author Gary Black
+ *
+ */
 public class Tabs {
     String name;
     String tab;
